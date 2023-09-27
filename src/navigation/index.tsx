@@ -39,6 +39,7 @@ export const TabsNavigator = () => {
           tabBarLabelStyle: { fontSize: 12, marginBottom: 4 },
           tabBarLabel: screenInfo?.title,
           title: screenInfo?.title,
+          headerShown: false,
         };
       }}
     >
