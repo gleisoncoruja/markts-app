@@ -3,6 +3,7 @@ import React from "react";
 
 type InfoTextProps = {
   taskQty: number;
+  period: string;
 };
 
 const StyledInfoText = styled.Text`
@@ -23,11 +24,16 @@ const StyledTasksQtyText = styled.Text`
   text-align: center;
 `;
 
-export const InfoText: React.FC<InfoTextProps> = ({ taskQty }) => {
-  const textQty = taskQty > 1 ? `${taskQty} tarefas` : `${taskQty} tarefa`;
+export const InfoText: React.FC<InfoTextProps> = ({ taskQty, period }) => {
+  const textQty = taskQty !== 1 ? `${taskQty} tarefas` : `${taskQty} tarefa`;
+  const periodText = {
+    today: "hoje",
+    week: "na semana",
+    month: "no mês",
+  }[period];
   return (
     <StyledInfoText>
-      Você tem <StyledTasksQtyText>{textQty}</StyledTasksQtyText> hoje!
+      Você tem <StyledTasksQtyText>{textQty}</StyledTasksQtyText> {periodText}!
     </StyledInfoText>
   );
 };

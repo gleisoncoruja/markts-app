@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { TabsNavigator } from "./src/navigation";
@@ -7,6 +8,7 @@ import {
   Jost_500Medium,
   Jost_400Regular,
 } from "@expo-google-fonts/jost";
+import { openDataBase } from "./src/db";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -15,9 +17,14 @@ export default function App() {
     JostRegular: Jost_400Regular,
   });
 
+  useEffect(() => {
+    openDataBase();
+  }, []);
+
   if (!fontsLoaded) {
-    return null; // ou renderize algo enquanto a fonte está sendo carregada
+    return null;
   }
+
   return (
     <NavigationContainer>
       <StatusBar translucent={false} backgroundColor={"#646FD4"} />

@@ -3,11 +3,20 @@ import React from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FeatherIcons from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { ViewProps, View } from "react-native";
+import { ViewProps, TouchableOpacity } from "react-native";
+import { ITask } from "../../../../interfaces/Tasks";
 
 interface StyledCardViewProps extends ViewProps {
   backgroundColor?: string;
 }
+
+interface ICardsProps {
+  tasksData: ITask[];
+}
+
+type CategoryCounts = {
+  [category: string]: number;
+};
 
 const StyledContentView = styled.View`
   flex: 1;
@@ -18,7 +27,7 @@ const StyledContentView = styled.View`
   align-items: center;
 `;
 
-const StyledCardView: React.FC<StyledCardViewProps> = styled.View`
+const StyledCardView: React.FC<StyledCardViewProps> = styled.TouchableOpacity`
   width: 100px;
   height: 100px;
   border-radius: 16px;
@@ -40,11 +49,25 @@ const StyledTitleText = styled.Text`
   text-align: center;
 `;
 
-export const Cards: React.FC = () => {
+export const Cards: React.FC<ICardsProps> = ({ tasksData }) => {
+  const categoryCounts: { [category: string]: number } = {
+    school: 0,
+    work: 0,
+    shop: 0,
+    reading: 0,
+    workOut: 0,
+    others: 0,
+  };
+
+  tasksData.forEach((task) => {
+    const category = task.category;
+    categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+  });
+
   return (
     <StyledContentView>
       <StyledCardView backgroundColor={"#2A8899"}>
-        <StyledQtyText>5</StyledQtyText>
+        <StyledQtyText>{categoryCounts.school}</StyledQtyText>
         <Ionicons
           name="school"
           size={32}
@@ -55,7 +78,7 @@ export const Cards: React.FC = () => {
       </StyledCardView>
 
       <StyledCardView backgroundColor={"#5EB0D2"}>
-        <StyledQtyText>5</StyledQtyText>
+        <StyledQtyText>{categoryCounts.work}</StyledQtyText>
         <Ionicons
           name="briefcase-sharp"
           size={32}
@@ -66,7 +89,7 @@ export const Cards: React.FC = () => {
       </StyledCardView>
 
       <StyledCardView backgroundColor={"#BE8972"}>
-        <StyledQtyText>5</StyledQtyText>
+        <StyledQtyText>{categoryCounts.shop}</StyledQtyText>
         <FeatherIcons
           name="shopping-cart"
           size={32}
@@ -77,7 +100,7 @@ export const Cards: React.FC = () => {
       </StyledCardView>
 
       <StyledCardView backgroundColor={"#646FD4"}>
-        <StyledQtyText>5</StyledQtyText>
+        <StyledQtyText>{categoryCounts.reading}</StyledQtyText>
         <MaterialIcons
           name="menu-book"
           size={32}
@@ -88,7 +111,7 @@ export const Cards: React.FC = () => {
       </StyledCardView>
 
       <StyledCardView backgroundColor={"#83BC74"}>
-        <StyledQtyText>5</StyledQtyText>
+        <StyledQtyText>{categoryCounts.workOut}</StyledQtyText>
         <MaterialIcons
           name="directions-run"
           size={32}
@@ -99,7 +122,7 @@ export const Cards: React.FC = () => {
       </StyledCardView>
 
       <StyledCardView backgroundColor={"#6a6d86"}>
-        <StyledQtyText>5</StyledQtyText>
+        <StyledQtyText>{categoryCounts.others}</StyledQtyText>
         <MaterialIcons
           name="devices-other"
           size={32}
