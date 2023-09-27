@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { HomeScreen } from "../screens/Home";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/Ionicons";
+import { TasksScreen } from "../screens/Tasks";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,7 +45,7 @@ export const TabsNavigator = () => {
       }}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="PendingList" component={HomeScreen} />
+      <Tab.Screen name="PendingList" component={TasksScreen} />
     </Tab.Navigator>
   );
 };
