@@ -94,6 +94,37 @@ const getTasksByPeriod = (period: string): Promise<ITask[]> => {
   });
 };
 
+const getTasks = (): Promise<ITask[]> => {
+  return new Promise<ITask[]>((resolve, reject) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "SELECT * FROM tasks",
+          [],
+          (_, { rows }) => {
+            const tasks: ITask[] = rows._array;
+            resolve(tasks);
+          },
+          (_, error) => {
+            console.error("Erro ao executar a transação SQL:", error);
+            reject(error); // Rejeite a promessa em caso de erro
+            return false;
+          }
+        );
+      },
+      (error) => {
+        console.error("Erro ao iniciar a transação SQL:", error);
+        reject(error); // Rejeite a promessa em caso de erro ao iniciar a transação
+        return false; // Não é necessário retornar false aqui
+      },
+      () => {
+        // Transação bem-sucedida
+        // Você pode retornar true aqui se necessário, mas não é estritamente necessário
+      }
+    );
+  });
+};
+
 const addTask = ({
   title,
   description,
@@ -128,7 +159,8 @@ const addTask = ({
   });
 };
 
-export const dbQuery = {
+export const dbService = {
   getTasksByPeriod,
   addTask,
+  getTasks,
 };

@@ -7,7 +7,7 @@ import { InfoText } from "./components/InfoText";
 import { DateTimeText } from "./components/DateText";
 import { FilterContent } from "./components/FilterContent";
 import { Cards } from "./components/Cards";
-import { dbQuery } from "../../db";
+import { dbService } from "../../db";
 import { ITask } from "../../interfaces/Tasks";
 
 export const HomeScreen = () => {
@@ -16,11 +16,26 @@ export const HomeScreen = () => {
 
   const getTasks = async () => {
     try {
-      const data = await dbQuery.getTasksByPeriod(selectedFilter);
+      const data = await dbService.getTasksByPeriod(selectedFilter);
       setTasksData(data);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const create = async () => {
+    try {
+      await dbService.addTask({
+        category: "reading",
+        date: "2023-09-28", //new Date().toISOString().split("T")[0],
+        description:
+          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis possimus sint ipsa molestias bla bla bla bla bla",
+        timeFrom: new Date().toLocaleTimeString(),
+        timeTo: new Date().toLocaleTimeString(),
+        title: "Ler códigos",
+        isComplete: 1,
+      });
+    } catch (error) {}
   };
 
   const handleFilterClick = (period: string) => {
@@ -29,6 +44,7 @@ export const HomeScreen = () => {
 
   useEffect(() => {
     getTasks();
+    //create();
   }, [selectedFilter]);
   return (
     <MainContainer>

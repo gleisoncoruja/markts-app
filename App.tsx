@@ -9,6 +9,7 @@ import {
   Jost_400Regular,
 } from "@expo-google-fonts/jost";
 import { openDataBase } from "./src/db";
+import Toast from "react-native-toast-message";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -29,6 +30,7 @@ export default function App() {
     <NavigationContainer>
       <StatusBar translucent={false} backgroundColor={"#646FD4"} />
       <TabsNavigator />
+      <Toast />
     </NavigationContainer>
   );
 }
