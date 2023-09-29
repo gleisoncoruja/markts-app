@@ -3,20 +3,16 @@ import React from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FeatherIcons from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { ViewProps, TouchableOpacity } from "react-native";
+import { TouchableOpacityProps } from "react-native";
 import { ITask } from "../../../../interfaces/Tasks";
-
-interface StyledCardViewProps extends ViewProps {
+import { useNavigation } from "@react-navigation/native";
+interface StyledCardViewProps extends TouchableOpacityProps {
   backgroundColor?: string;
 }
 
 interface ICardsProps {
   tasksData: ITask[];
 }
-
-type CategoryCounts = {
-  [category: string]: number;
-};
 
 const StyledContentView = styled.View`
   flex: 1;
@@ -50,6 +46,7 @@ const StyledTitleText = styled.Text`
 `;
 
 export const Cards: React.FC<ICardsProps> = ({ tasksData }) => {
+  const navigation = useNavigation();
   const categoryCounts: { [category: string]: number } = {
     school: 0,
     work: 0,
@@ -64,9 +61,13 @@ export const Cards: React.FC<ICardsProps> = ({ tasksData }) => {
     categoryCounts[category] = (categoryCounts[category] || 0) + 1;
   });
 
+  const handleNavigate = () => {
+    navigation.navigate("PendingList" as never);
+  };
+
   return (
     <StyledContentView>
-      <StyledCardView backgroundColor={"#2A8899"}>
+      <StyledCardView backgroundColor={"#2A8899"} onPress={handleNavigate}>
         <StyledQtyText>{categoryCounts.school}</StyledQtyText>
         <Ionicons
           name="school"
@@ -77,7 +78,7 @@ export const Cards: React.FC<ICardsProps> = ({ tasksData }) => {
         <StyledTitleText>Estudos</StyledTitleText>
       </StyledCardView>
 
-      <StyledCardView backgroundColor={"#5EB0D2"}>
+      <StyledCardView backgroundColor={"#5EB0D2"} onPress={handleNavigate}>
         <StyledQtyText>{categoryCounts.work}</StyledQtyText>
         <Ionicons
           name="briefcase-sharp"
@@ -88,7 +89,7 @@ export const Cards: React.FC<ICardsProps> = ({ tasksData }) => {
         <StyledTitleText>Trabalho</StyledTitleText>
       </StyledCardView>
 
-      <StyledCardView backgroundColor={"#BE8972"}>
+      <StyledCardView backgroundColor={"#BE8972"} onPress={handleNavigate}>
         <StyledQtyText>{categoryCounts.shop}</StyledQtyText>
         <FeatherIcons
           name="shopping-cart"
@@ -99,7 +100,7 @@ export const Cards: React.FC<ICardsProps> = ({ tasksData }) => {
         <StyledTitleText>Compras</StyledTitleText>
       </StyledCardView>
 
-      <StyledCardView backgroundColor={"#646FD4"}>
+      <StyledCardView backgroundColor={"#646FD4"} onPress={handleNavigate}>
         <StyledQtyText>{categoryCounts.reading}</StyledQtyText>
         <MaterialIcons
           name="menu-book"
@@ -110,7 +111,7 @@ export const Cards: React.FC<ICardsProps> = ({ tasksData }) => {
         <StyledTitleText>Leitura</StyledTitleText>
       </StyledCardView>
 
-      <StyledCardView backgroundColor={"#83BC74"}>
+      <StyledCardView backgroundColor={"#83BC74"} onPress={handleNavigate}>
         <StyledQtyText>{categoryCounts.workOut}</StyledQtyText>
         <MaterialIcons
           name="directions-run"
@@ -121,7 +122,7 @@ export const Cards: React.FC<ICardsProps> = ({ tasksData }) => {
         <StyledTitleText>Treino</StyledTitleText>
       </StyledCardView>
 
-      <StyledCardView backgroundColor={"#6a6d86"}>
+      <StyledCardView backgroundColor={"#6a6d86"} onPress={handleNavigate}>
         <StyledQtyText>{categoryCounts.others}</StyledQtyText>
         <MaterialIcons
           name="devices-other"

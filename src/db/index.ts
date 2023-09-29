@@ -24,10 +24,9 @@ const getTasksByPeriod = (period: string): Promise<ITask[]> => {
       const formattedCurrentDate = `${currentDate.getFullYear()}-${formatWithLeadingZero(
         currentDate.getMonth() + 1
       )}-${formatWithLeadingZero(currentDate.getDate())}`;
-      startDate = formattedCurrentDate; // Data de hoje
-      endDate = startDate; // Data de hoje
+      startDate = formattedCurrentDate;
+      endDate = startDate;
     } else if (period === "week") {
-      // Calcula a data de início da semana (domingo) e o final da semana (sábado)
       const firstDayOfWeek = new Date(currentDate);
       firstDayOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
       const lastDayOfWeek = new Date(currentDate);
@@ -43,7 +42,6 @@ const getTasksByPeriod = (period: string): Promise<ITask[]> => {
       startDate = formattedFirstDayOfWeek;
       endDate = formattedLastDayOfWeek;
     } else if (period === "month") {
-      // Calcula a data de início do mês e o final do mês
       const firstDayOfMonth = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),
@@ -73,23 +71,21 @@ const getTasksByPeriod = (period: string): Promise<ITask[]> => {
             "SELECT * FROM tasks WHERE isComplete = 0 AND date BETWEEN ? AND ?",
             [startDate!, endDate!],
             (_, { rows }) => {
-              const tasks: ITask[] = rows._array; // Converte os resultados para o tipo ITask
-              resolve(tasks); // Resolve a Promise com os dados
+              const tasks: ITask[] = rows._array;
+              resolve(tasks);
             }
           );
         },
         (error) => {
-          // Lide com o erro e retorne false (ou qualquer outro valor) se necessário
           console.error("Erro ao executar a transação SQL:", error);
           return false;
         },
         () => {
-          // Transação bem-sucedida
-          return true; // Retorne true se necessário
+          return true;
         }
       );
     } else {
-      reject("startDate ou endDate não definidos"); // Rejeita a Promise se startDate ou endDate estiverem indefinidos
+      reject("startDate ou endDate não definidos");
     }
   });
 };
@@ -99,7 +95,7 @@ const getTasks = (): Promise<ITask[]> => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "SELECT * FROM tasks",
+          "SELECT * FROM tasks ORDER BY isComplete ASC, date ASC",
           [],
           (_, { rows }) => {
             const tasks: ITask[] = rows._array;
@@ -107,20 +103,17 @@ const getTasks = (): Promise<ITask[]> => {
           },
           (_, error) => {
             console.error("Erro ao executar a transação SQL:", error);
-            reject(error); // Rejeite a promessa em caso de erro
+            reject(error);
             return false;
           }
         );
       },
       (error) => {
         console.error("Erro ao iniciar a transação SQL:", error);
-        reject(error); // Rejeite a promessa em caso de erro ao iniciar a transação
-        return false; // Não é necessário retornar false aqui
+        reject(error);
+        return false;
       },
-      () => {
-        // Transação bem-sucedida
-        // Você pode retornar true aqui se necessário, mas não é estritamente necessário
-      }
+      () => {}
     );
   });
 };
@@ -140,20 +133,85 @@ const addTask = ({
           "INSERT INTO tasks (title, description, date, timeFrom, timeTo, category, isComplete) VALUES (?, ?, ?, ?, ?, ?, ?)",
           [title, description, date, timeFrom, timeTo, category, 0],
           (_, result) => {
-            const insertId = result.insertId as number; // Certifica-se de que insertId seja um número
-            console.log(`Tarefa adicionada com ID: ${insertId}`);
-            resolve(insertId); // Resolve a Promise com o ID da tarefa inserida
+            const insertId = result.insertId as number;
+            resolve(insertId);
           },
           (_, error) => {
             console.error("Erro ao adicionar a tarefa: ", error);
-            reject(error); // Rejeita a Promise com o erro
+            reject(error);
             return true;
           }
         );
       },
       (error) => {
         console.error("Erro na transação SQL: ", error);
-        reject(error); // Rejeita a Promise com o erro da transação
+        reject(error);
+      }
+    );
+  });
+};
+
+const updateTask = ({
+  id,
+  title,
+  description,
+  date,
+  timeFrom,
+  timeTo,
+  category,
+  isComplete,
+}: ITask): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "UPDATE tasks SET title = ?, description = ?, date = ?, timeFrom = ?, timeTo = ?, category = ?, isComplete = ? WHERE id = ?",
+          [
+            title,
+            description,
+            date,
+            timeFrom,
+            timeTo,
+            category,
+            isComplete!,
+            id!,
+          ],
+          (_, result) => {
+            resolve();
+          },
+          (_, error) => {
+            console.error("Erro ao atualizar a tarefa: ", error);
+            reject(error);
+            return true;
+          }
+        );
+      },
+      (error) => {
+        console.error("Erro na transação SQL: ", error);
+        reject(error);
+      }
+    );
+  });
+};
+
+const deleteTask = (taskId: number): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "DELETE FROM tasks WHERE id = ?",
+          [taskId],
+          (_, result) => {
+            resolve();
+          },
+          (_, error) => {
+            reject(error);
+            return true;
+          }
+        );
+      },
+      (error) => {
+        reject(error);
       }
     );
   });
@@ -163,4 +221,6 @@ export const dbService = {
   getTasksByPeriod,
   addTask,
   getTasks,
+  updateTask,
+  deleteTask,
 };

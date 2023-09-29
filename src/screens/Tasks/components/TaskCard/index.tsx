@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components/native";
 import { ITask } from "../../../../interfaces/Tasks";
-import { TouchableOpacityProps, Text, FlatList } from "react-native";
+import { TouchableOpacityProps, RefreshControl, FlatList } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FeatherIcons from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -11,16 +11,17 @@ interface IStyledCardContent extends TouchableOpacityProps {
 }
 interface ITaskCardProps {
   tasksData: ITask[];
-  onPress: () => void;
+  onPress: (taskId: number) => void;
+  handleRefresh: () => void;
+  refreshing: boolean;
 }
 
 interface ICardProps {
   task: ITask;
-  onPress: () => void;
+  onPress: (taskId: number) => void;
 }
 
 const StyledCardContent: React.FC<IStyledCardContent> = styled.TouchableOpacity`
-  flex: 1;
   flex-direction: row;
   border-radius: 16px;
   background-color: ${({ isComplete }) =>
@@ -43,6 +44,7 @@ const DateTimeText = styled.Text`
 `;
 
 const InfoContent = styled.View`
+  flex: 1;
   gap: 2px;
 `;
 
@@ -67,7 +69,6 @@ const InfoStatusText = styled.Text`
 `;
 
 const IconContent = styled.View`
-  flex: 1;
   align-items: center;
   justify-content: center;
 `;
@@ -85,8 +86,12 @@ const Card: React.FC<ICardProps> = ({ task, onPress }) => {
     workOut: <MaterialIcons name="directions-run" size={32} color={"white"} />,
     others: <MaterialIcons name="devices-other" size={32} color={"white"} />,
   }[task.category];
+
   return (
-    <StyledCardContent isComplete={isComplete} onPress={onPress}>
+    <StyledCardContent
+      isComplete={isComplete}
+      onPress={() => onPress(task.id!)}
+    >
       <DateTimeContent>
         <DateTimeText>{date}</DateTimeText>
         <DateTimeText>{task.timeFrom}</DateTimeText>
@@ -104,12 +109,20 @@ const Card: React.FC<ICardProps> = ({ task, onPress }) => {
   );
 };
 
-export const TaskCard: React.FC<ITaskCardProps> = ({ tasksData, onPress }) => {
+export const TaskCard: React.FC<ITaskCardProps> = ({
+  tasksData,
+  onPress,
+  handleRefresh,
+  refreshing,
+}) => {
   return (
     <FlatList
       data={tasksData}
       renderItem={({ item }) => <Card task={item} onPress={onPress} />}
       keyExtractor={(task) => String(task.id)}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+      }
     />
   );
 };

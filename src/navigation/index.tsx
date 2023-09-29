@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { HomeScreen } from "../screens/Home";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Icon from "react-native-vector-icons/Ionicons";
 import { TasksScreen } from "../screens/Tasks";
 
 const Tab = createBottomTabNavigator();
@@ -33,7 +32,6 @@ export const TabsNavigator = () => {
               />
             );
           },
-
           tabBarActiveTintColor: "#1565c0",
           tabBarInactiveTintColor: "#757575",
           tabBarStyle: { height: 60, backgroundColor: "#f5f5f5" },

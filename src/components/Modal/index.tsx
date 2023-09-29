@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { ScrollView, Pressable, Modal as StyledModal } from "react-native";
+import { Pressable, Modal as StyledModal } from "react-native";
 import styled from "styled-components/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 

@@ -9,9 +9,11 @@ import Toast from "react-native-toast-message";
 import { ActionCards } from "../../ActionsCards";
 import { Picker } from "@react-native-picker/picker";
 import { dbService } from "../../../../../db";
+import { ITask } from "../../../../../interfaces/Tasks";
 
-interface ICreateTaskProps {
+interface IEditTaskProps {
   reloadData: () => void;
+  taskData?: ITask;
 }
 
 const Container = styled.View`
@@ -20,16 +22,39 @@ const Container = styled.View`
   min-width: 300px;
 `;
 
-export const CreateTask: React.FC<ICreateTaskProps> = ({ reloadData }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [timeFrom, setTimeFrom] = useState(new Date());
-  const [timeTo, setTimeTo] = useState(new Date());
+export const EditTask: React.FC<IEditTaskProps> = ({
+  reloadData,
+  taskData,
+}) => {
+  const [title, setTitle] = useState(taskData?.title || "");
+  const [description, setDescription] = useState(taskData?.description || "");
+  const [date, setDate] = useState(
+    taskData?.date ? new Date(taskData.date) : new Date()
+  );
+  const [timeFrom, setTimeFrom] = useState(() => {
+    const taskDate = new Date();
+    const time = taskData?.timeFrom.split(":");
+    const hour = Number(time?.[0]);
+    const min = Number(time?.[1]);
+    const sec = Number(time?.[2]);
+    time && taskDate.setHours(hour, min, sec);
+    return taskDate;
+  });
+  const [timeTo, setTimeTo] = useState(() => {
+    const taskDate = new Date();
+    const time = taskData?.timeTo.split(":");
+    const hour = Number(time?.[0]);
+    const min = Number(time?.[1]);
+    const sec = Number(time?.[2]);
+    time && taskDate.setHours(hour, min, sec);
+    return taskDate;
+  });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimeFromPicker, setShowTimeFromPicker] = useState(false);
   const [showTimeToPicker, setShowTimeToPicker] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("school");
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    taskData?.category || "school"
+  );
 
   const categories = [
     { value: "school", label: "Estudos" },
@@ -44,25 +69,44 @@ export const CreateTask: React.FC<ICreateTaskProps> = ({ reloadData }) => {
     setSelectedCategory(itemValue);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (isComplete?: number) => {
     try {
-      await dbService.addTask({
+      await dbService.updateTask({
+        id: taskData?.id,
         title,
         description,
         category: selectedCategory,
         date: date.toISOString().split("T")[0],
         timeFrom: timeFrom.toLocaleTimeString(),
         timeTo: timeTo.toLocaleTimeString(),
+        isComplete: isComplete || 0,
       });
       Toast.show({
         type: "success",
-        text1: "Tarefa criada com sucesso!",
+        text1: "Tarefa editada com sucesso!",
       });
       reloadData();
     } catch {
       Toast.show({
         type: "error",
-        text1: "Erro ao criar tarefa",
+        text1: "Erro ao editar tarefa",
+        text2: "Tente novamente mais tarde",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await dbService.deleteTask(taskData?.id!);
+      Toast.show({
+        type: "success",
+        text1: "Tarefa excluída com sucesso!",
+      });
+      reloadData();
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao excluir tarefa",
         text2: "Tente novamente mais tarde",
       });
     }
@@ -186,11 +230,24 @@ export const CreateTask: React.FC<ICreateTaskProps> = ({ reloadData }) => {
         numberOfLines={5}
         onChangeText={(text) => setDescription(text)}
       />
-      <Button
-        title="salvar"
-        onPress={handleSubmit}
-        disabled={disableSaveButton}
-      />
+
+      {!taskData?.isComplete ? (
+        <>
+          <Button
+            title="Concluir"
+            onPress={() => handleSubmit(1)}
+            disabled={disableSaveButton}
+            color={"#83BC74"}
+          />
+
+          <Button title="Excluir" onPress={handleDelete} color={"#a10505"} />
+          <Button
+            title="Salvar Edição"
+            onPress={() => handleSubmit(0)}
+            disabled={disableSaveButton}
+          />
+        </>
+      ) : null}
     </Container>
   );
 };

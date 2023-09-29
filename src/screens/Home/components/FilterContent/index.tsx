@@ -1,11 +1,6 @@
 import styled from "styled-components/native";
 import React from "react";
-import {
-  ViewProps,
-  TextProps,
-  TouchableOpacityProps,
-  TouchableOpacity,
-} from "react-native";
+import { TextProps, TouchableOpacityProps } from "react-native";
 
 interface FilterContentProps {
   selectedFilter: string;
@@ -22,7 +17,7 @@ interface StyledTextProps extends TextProps {
 
 const StyledView = styled.View`
   flex-direction: row;
-  margin: 42px 16px;
+  margin: 104px 16px;
   padding: 8px;
   justify-content: space-between;
   align-items: center;
